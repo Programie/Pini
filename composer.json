@@ -1,0 +1,15 @@
+{
+	"name" : "programie/phpiniparser",
+	"description" : "A simple OOP alternative to PHP's parse_ini_file",
+	"minimum-stability" : "stable",
+	"license" : "",
+	"authors" :
+	[
+		{
+			"name" : "Michael Wieland",
+			"email" : "phpiniparser@selfcoders.com",
+			"homepage" : "http://selfcoders.com",
+			"role" : "Developer"
+		}
+	]
+}

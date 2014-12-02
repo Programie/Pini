@@ -11,5 +11,9 @@
 			"homepage" : "http://selfcoders.com",
 			"role" : "Developer"
 		}
-	]
+	],
+	"autoload" :
+	{
+		"classmap" : ["Ini.class.php"]
+	}
 }

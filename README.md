@@ -8,6 +8,54 @@ Add the composer package "programie/phpiniparser" to the required packages of yo
 
 ## Usage
 
+### Methods
+
+#### getData
+
+```php
+$ini->getData()
+```
+
+Returns the internal array containing all sections and their keys.
+
+Each array element represents a section which is another array containing the key value pairs.
+
+Example structure:
+
+```
+array
+(
+	"section1" => array
+	(
+		"key" => "some value",
+		"another key" => "another value"
+	),
+	"another section" => array
+	(
+		"key" => "value of another section",
+		"yet another key" => "value"
+	)
+)
+```
+
+#### getValue
+
+Returns the value of the specified key in the specified section.
+
+```php
+$ini->getValue($section, $key)
+```
+
+#### merge
+
+Merges the data of the given Ini instance into the instance from which you are calling this method.
+
+The optional $section parameter allows you to only merge a specified section.
+
+```php
+$ini->merge(Ini $otherInstance, $section = null)
+```
+
 ### Parse ini and read values
 
 ```php

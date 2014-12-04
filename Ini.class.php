@@ -91,6 +91,8 @@ class Ini
 	/**
 	 * Get the complete array containing all sections and keys of the parsed ini file.
 	 *
+	 * If the optional $section parameter is specified, only the given section will be returned.
+	 *
 	 * The returned array has the following structure:
 	 * array
 	 * (
@@ -111,11 +113,23 @@ class Ini
 	 *   )
 	 * )
 	 *
-	 * @return array The complete data of the parsed ini file
+	 * @param null|string $section An optional section name
+	 *
+	 * @return null|array The complete data of the parsed ini file (or of the specified section, null if the section does not exist)
 	 */
-	public function getData()
+	public function getData($section = null)
 	{
-		return $this->data;
+		if ($section == null)
+		{
+			return $this->data;
+		}
+
+		if (!isset($this->data[$section]))
+		{
+			return null;
+		}
+
+		return $this->data[$section];
 	}
 
 	/**

@@ -38,6 +38,12 @@ class Ini
 	{
 		$line = trim($line);
 
+		// Ignore empty lines
+		if (!$line)
+		{
+			return;
+		}
+
 		// This line is a comment -> skip it
 		if ($line[0] == ";")
 		{

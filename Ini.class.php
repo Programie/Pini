@@ -62,7 +62,24 @@ class Ini
 			$this->data[$this->currentSection] = array();
 		}
 
-		$this->data[$this->currentSection][$key] = $value;
+		// The key of key-array pairs end with "[]" (e.g. value[])
+		if (substr($key, -2) == "[]")
+		{
+			// This is a key-array pair (a key with multiple values)
+			$key = substr($key, 0, -2);
+
+			if (!isset($this->data[$this->currentSection][$key]) or !is_array($this->data[$this->currentSection][$key]))
+			{
+				$this->data[$this->currentSection][$key] = array();
+			}
+
+			$this->data[$this->currentSection][$key][] = $value;
+		}
+		else
+		{
+			// This is a normal key-value pair
+			$this->data[$this->currentSection][$key] = $value;
+		}
 	}
 
 	/**
@@ -79,7 +96,12 @@ class Ini
 	 *   "another section" => array
 	 *   (
 	 *     "key" => "value of another section",
-	 *     "yet another key" => "value"
+	 *     "yet another key" => "value",
+	 *     "some array" => array
+	 *     (
+	 *       "some value in array",
+	 *       "another value in array"
+	 *     )
 	 *   )
 	 * )
 	 *

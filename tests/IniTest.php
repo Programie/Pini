@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . "/../Ini.class.php";
+
 class IniTest extends PHPUnit_Framework_TestCase
 {
 	public function testReadValue()

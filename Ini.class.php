@@ -167,7 +167,10 @@ class Ini
 
 		if ($section == null)
 		{
-			$this->data = array_replace_recursive($this->data, $sourceData);
+			foreach ($sourceData as $section => $data)
+			{
+				$this->merge($otherInstance, $section);
+			}
 			return;
 		}
 
@@ -181,6 +184,9 @@ class Ini
 			$this->data[$section] = array();
 		}
 
-		$this->data[$section] = array_replace_recursive($this->data, $sourceData[$section]);
+		foreach ($sourceData[$section] as $key => $value)
+		{
+			$this->data[$section][$key] = $value;
+		}
 	}
 }

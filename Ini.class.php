@@ -2,6 +2,10 @@
 class Ini
 {
 	/**
+	 * @var string The filename which should be used by default in load() and save() if not specified
+	 */
+	private $filename;
+	/**
 	 * @var array An array containing all sections and their keys
 	 * @see getData for more information
 	 */
@@ -11,22 +15,12 @@ class Ini
 	 */
 	private $currentSection;
 
-	public function __construct($filename)
+	public function __construct($filename = null)
 	{
 		$this->data = array();
+		$this->filename = $filename;
 
-		$file = fopen($filename, "r");
-		if (!$file)
-		{
-			return;
-		}
-
-		while (($line = fgets($file)) !== false)
-		{
-			$this->parseLine($line);
-		}
-
-		fclose($file);
+		$this->load();
 	}
 
 	/**
@@ -156,6 +150,23 @@ class Ini
 	}
 
 	/**
+	 * Set the value of the specified key in the specified section.
+	 *
+	 * @param string $section The name of the section in which the key should be set
+	 * @param string $key The name of the key of which the value should be set
+	 * @param mixed $value The value of the key in the section
+	 */
+	public function setValue($section, $key, $value)
+	{
+		if (!isset($this->data[$section]))
+		{
+			$this->data[$section] = array();
+		}
+
+		$this->data[$section][$key] = $value;
+	}
+
+	/**
 	 * Merge the data of the given Ini instance into this instance.
 	 *
 	 * @param Ini $otherInstance The Ini instance of which the data should be merged into this instance
@@ -188,5 +199,90 @@ class Ini
 		{
 			$this->data[$section][$key] = $value;
 		}
+	}
+
+	/**
+	 * Load the content of the ini file.
+	 *
+	 * @param null|string $filename The name of the file from which the content should be loaded or null to load it from the initially given filename
+	 *
+	 * @return bool true if the file was loaded successfully, false otherwise
+	 */
+	public function load($filename = null)
+	{
+		if ($filename == null)
+		{
+			$filename = $this->filename;
+			if ($filename == null)
+			{
+				return false;
+			}
+		}
+
+		$file = fopen($filename, "r");
+		if (!$file)
+		{
+			return false;
+		}
+
+		$this->data = array();
+
+		while (($line = fgets($file)) !== false)
+		{
+			$this->parseLine($line);
+		}
+
+		fclose($file);
+
+		return true;
+	}
+
+	/**
+	 * Save the content of the ini file.
+	 *
+	 * @param null|string $filename The name of the file in which the content should be saved or null to overwrite the initially given file
+	 *
+	 * @return bool true if the file was written successfully, false otherwise
+	 */
+	public function save($filename = null)
+	{
+		if ($filename == null)
+		{
+			$filename = $this->filename;
+			if ($filename == null)
+			{
+				return false;
+			}
+		}
+
+		$file = fopen($filename, "w");
+		if (!$file)
+		{
+			return false;
+		}
+
+		foreach ($this->data as $section => $properties)
+		{
+			fputs($file, "[" . $section . "]\n");
+
+			foreach ($properties as $key => $value)
+			{
+				if (is_array($value))
+				{
+					foreach ($value as $arrayValue)
+					{
+						fputs($file, $key . "[] = " . $arrayValue . "\n");
+					}
+				}
+				else
+				{
+					fputs($file, $key . " = " . $value . "\n");
+				}
+			}
+		}
+
+		fclose($file);
+
+		return true;
 	}
 }

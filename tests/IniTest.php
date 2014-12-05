@@ -70,4 +70,25 @@ class IniTest extends PHPUnit_Framework_TestCase
 
 		unlink($filename);
 	}
+
+	public function testMergeSave()
+	{
+		$filename = tempnam(sys_get_temp_dir(), "ini");
+
+		$ini = new Ini($filename);
+
+		$ini->setValue("my section", "some key", "this value will be replaced");
+		$ini->setValue("my section", "some other key", "this value will not be replaced");
+
+		$ini->merge(new Ini(__DIR__ . "/../examples/example.ini"));
+
+		$ini->save();
+
+		$ini2 = new Ini($filename);
+
+		$this->assertEquals("some value", $ini2->getValue("my section", "some key"));
+		$this->assertEquals("this value will not be replaced", $ini2->getValue("my section", "some other key"));
+
+		unlink($filename);
+	}
 }

@@ -53,4 +53,21 @@ class IniTest extends PHPUnit_Framework_TestCase
 
 		unlink($filename);
 	}
+
+	public function testSaveArray()
+	{
+		$filename = tempnam(sys_get_temp_dir(), "ini");
+
+		$ini = new Ini($filename);
+
+		$ini->setValue("some section", "some key", array("value 1", "value 2"));
+
+		$ini->save();
+
+		$ini2 = new Ini($filename);
+
+		$this->assertEquals(array("value 1", "value 2"), $ini2->getValue("some section", "some key"));
+
+		unlink($filename);
+	}
 }

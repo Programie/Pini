@@ -89,3 +89,33 @@ $ini1->merge($ini2, "section name");
 ```
 
 This will only merge keys from the given section from $ini2 into $ini1.
+
+### Write values and save ini
+
+With PHPIniParser you are also able to write ini files.
+
+```php
+$ini = new Ini();
+
+$ini->setValue("section name", "key name", "some value");
+
+$ini->save("/path/to/your/file.ini");
+```
+
+This will add or replace the key "key name" in the section "section name" with the value "some value".
+
+The save() method saves the whole content of the Ini instance to a file.
+
+Note: The $filename parameter in the save() method is optional. The filename passed on instance creation is used by default.
+
+```php
+$ini = new Ini("/path/to/your/file.ini");
+
+// ... Some other ini methods.
+
+$ini->save();
+```
+
+This will save the content to the file passed on instance creation ("/path/to/your/file.ini").
+
+Look at the examples folder for more examples.

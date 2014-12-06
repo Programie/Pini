@@ -10,4 +10,4 @@ Add the composer package "programie/phpiniparser" to the required packages of yo
 
 ## Usage
 
-See the wiki for information how to use this library.
+See the [wiki](https://github.com/Programie/PHPIniParser/wiki) for information how to use this library.

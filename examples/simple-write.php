@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . "/../Ini.class.php";
+require_once __DIR__ . "/../Pini.class.php";
 
-$ini = new Ini();
+$ini = new Pini();
 
 $ini->setValue("my section", "some key", "the value to save");
 

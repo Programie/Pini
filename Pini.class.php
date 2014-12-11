@@ -1,5 +1,5 @@
 <?php
-class Ini
+class Pini
 {
 	/**
 	 * @var string The filename which should be used by default in load() and save() if not specified
@@ -167,12 +167,12 @@ class Ini
 	}
 
 	/**
-	 * Merge the data of the given Ini instance into this instance.
+	 * Merge the data of the given Pini instance into this instance.
 	 *
-	 * @param Ini $otherInstance The Ini instance of which the data should be merged into this instance
+	 * @param Pini $otherInstance The Pini instance of which the data should be merged into this instance
 	 * @param null|string $section An optional section name which should be merged (any other section will be omitted)
 	 */
-	public function merge(Ini $otherInstance, $section = null)
+	public function merge(Pini $otherInstance, $section = null)
 	{
 		$sourceData = $otherInstance->getData();
 

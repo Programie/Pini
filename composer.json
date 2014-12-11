@@ -1,6 +1,6 @@
 {
-	"name" : "programie/phpiniparser",
-	"description" : "A simple OOP alternative to PHP's parse_ini_file",
+	"name" : "programie/pini",
+	"description" : "A simple PHP class for reading and writing ini files",
 	"minimum-stability" : "stable",
 	"license" : "",
 	"authors" :
@@ -14,7 +14,7 @@
 	],
 	"autoload" :
 	{
-		"classmap" : ["Ini.class.php"]
+		"classmap" : ["Pini.class.php"]
 	},
 	"require-dev": {
 		"phpunit/phpunit": "~4.3"

@@ -123,6 +123,22 @@ class Pini
 	}
 
 	/**
+	 * Get the instance of the specified section.
+	 *
+	 * @param string $name The name of the section to retrieve
+	 * @return null|PiniSection The section or null if not found
+	 */
+	public function getSection($name)
+	{
+		if (!isset($this->sections[$name]))
+		{
+			return null;
+		}
+
+		return $this->sections[$name];
+	}
+
+	/**
 	 * Get the specified property of the specified section.
 	 *
 	 * @param string $section The name of the section from which the property should be retrieved

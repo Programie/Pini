@@ -1,11 +1,25 @@
 <?php
 require_once __DIR__ . "/../Pini.class.php";
 
-$ini = new Pini(__DIR__ . "/commented.ini");
+$ini = new Pini(__DIR__ . "/example.ini");
 
-$property1 = $ini->getProperty("my section", "my key");
-$property2 = $ini->getProperty("my section", "another key");
+$section = $ini->getSection("my section");// Returns a PiniSection instance if the section was found, otherwise returns null
 
-echo implode("\n", $property1->comment);// This will return "And here you can see an example property"
+echo "Section: " . $section->name . "\n";
+echo "Comment: " . implode("\n", $section->comment) . "\n";
+
 echo "\n";
-echo implode("\n", $property2->comment);// This will return "You may even use\nmultiple lines\nin comments" (\n replaced by new line)
+
+$property = $section->getProperty("some key");// Returns a PiniProperty instance if the property was found, otherwise returns null
+
+echo "Key: " . $property->name . "\n";
+echo "Comment: " . implode("\n", $property->comment) . "\n";
+echo "Value: " . $property->value . "\n";
+
+echo "\n";
+
+$property = $section->getProperty("another key");// Returns a PiniProperty instance if the property was found, otherwise returns null
+
+echo "Key: " . $property->name . "\n";
+echo "Comment: " . implode("\n", $property->comment) . "\n";
+echo "Value: " . $property->value . "\n";

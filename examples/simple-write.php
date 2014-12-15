@@ -3,8 +3,16 @@ require_once __DIR__ . "/../Pini.class.php";
 
 $ini = new Pini();
 
-$ini->setValue("my section", "some key", "the value to save");
+$section = new PiniSection("my section");
 
-$ini->setValue("my section", "integer value", 12345);
+$section->comment = array("A section can contain a comment", "even over multiple lines");
+
+$ini->addSection($section);
+
+$section->addProperty(new PiniProperty("some key", "the value to save"));
+
+$property = new PiniProperty("integer value", "12345");
+$property->comment = array("This is a comment for the integer value property");
+$section->addProperty($property);
 
 $ini->save(__DIR__ . "/example-write.ini");

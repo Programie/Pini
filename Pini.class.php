@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . "/PiniSection.class.php";
+require_once __DIR__ . "/PiniProperty.class.php";
+
 class Pini
 {
 	/**
@@ -6,21 +9,30 @@ class Pini
 	 */
 	private $filename;
 	/**
-	 * @var array An array containing all sections and their keys
-	 * @see getData for more information
+	 * @var array An array containing all PiniSection instances
 	 */
-	private $data;
+	public $sections;
 	/**
 	 * @var string The name of the currently parsing section
 	 */
 	private $currentSection;
+	/**
+	 * @var array The content of the currently reading comment block
+	 */
+	private $commentBlock;
 
 	public function __construct($filename = null)
 	{
-		$this->data = array();
 		$this->filename = $filename;
 
+		$this->init();
 		$this->load();
+	}
+
+	private function init()
+	{
+		$this->commentBlock = array();
+		$this->sections = array();
 	}
 
 	/**
@@ -41,13 +53,17 @@ class Pini
 		// This line is a comment -> skip it
 		if ($line[0] == ";")
 		{
+			$this->commentBlock[] = substr($line, 1);
 			return;
 		}
 
 		// Parse a section in format "[name]"
 		if ($line[0] == "[" and $line[strlen($line) - 1] == "]")
 		{
-			$this->currentSection = substr($line, 1, strlen($line) - 2);
+			$this->currentSection = new PiniSection(substr($line, 1, strlen($line) - 2), $this->commentBlock);
+			$this->addSection($this->currentSection);
+
+			$this->commentBlock = array();
 			return;
 		}
 
@@ -57,9 +73,11 @@ class Pini
 		$key = trim($key);
 		$value = trim($value);
 
-		if (!isset($this->data[$this->currentSection]))
+		// No section defined yet -> Create a new default section without a name
+		if (!$this->currentSection)
 		{
-			$this->data[$this->currentSection] = array();
+			$this->currentSection = new PiniSection();
+			$this->addSection($this->currentSection);
 		}
 
 		// The key of key-array pairs end with "[]" (e.g. value[])
@@ -68,136 +86,157 @@ class Pini
 			// This is a key-array pair (a key with multiple values)
 			$key = substr($key, 0, -2);
 
-			if (!isset($this->data[$this->currentSection][$key]) or !is_array($this->data[$this->currentSection][$key]))
+			$property = $this->currentSection->getProperty($key);
+			if (!$property)
 			{
-				$this->data[$this->currentSection][$key] = array();
+				$property = new PiniProperty($key, array());
+				$this->currentSection->addProperty($property);
 			}
 
-			$this->data[$this->currentSection][$key][] = $value;
+			$property->value[] = $value;
 		}
 		else
 		{
 			// This is a normal key-value pair
-			$this->data[$this->currentSection][$key] = $value;
+			$property = $this->currentSection->getProperty($key);
+			if (!$property)
+			{
+				$property = new PiniProperty($key);
+				$this->currentSection->addProperty($property);
+			}
+
+			$property->value = $value;
 		}
+
+		$property->comment = $this->commentBlock;
+		$this->commentBlock = array();
 	}
 
 	/**
-	 * Get the complete array containing all sections and keys of the parsed ini file.
+	 * Add the given section.
 	 *
-	 * If the optional $section parameter is specified, only the given section will be returned.
-	 *
-	 * The returned array has the following structure:
-	 * array
-	 * (
-	 *   "section1" => array
-	 *   (
-	 *     "key" => "some value",
-	 *     "another key" => "another value"
-	 *   ),
-	 *   "another section" => array
-	 *   (
-	 *     "key" => "value of another section",
-	 *     "yet another key" => "value",
-	 *     "some array" => array
-	 *     (
-	 *       "some value in array",
-	 *       "another value in array"
-	 *     )
-	 *   )
-	 * )
-	 *
-	 * @param null|string $section An optional section name
-	 *
-	 * @return null|array The complete data of the parsed ini file (or of the specified section, null if the section does not exist)
+	 * @param PiniSection $section The instance of the section
 	 */
-	public function getData($section = null)
+	public function addSection(PiniSection $section)
 	{
-		if ($section == null)
-		{
-			return $this->data;
-		}
+		$this->sections[$section->name] = $section;
+	}
 
-		if (!isset($this->data[$section]))
+	/**
+	 * Get the specified property of the specified section.
+	 *
+	 * @param string $section The name of the section from which the property should be retrieved
+	 * @param string $key The name of the property which should be retrieved
+	 *
+	 * @return null|PiniProperty The property or null if not found
+	 */
+	public function getProperty($section, $key)
+	{
+		if (!isset($this->sections[$section]))
 		{
 			return null;
 		}
 
-		return $this->data[$section];
+		/**
+		 * @var $sectionInstance PiniSection
+		 */
+		$sectionInstance = $this->sections[$section];
+
+		if (!isset($sectionInstance->properties[$key]))
+		{
+			return null;
+		}
+
+		return $sectionInstance->properties[$key];
 	}
 
 	/**
-	 * Get the value of the specified key in the specified section.
+	 * Set the property in the specified section
 	 *
-	 * @param string $section The name of the section from which the key should be retrieved
-	 * @param string $key The name of the key of which the value should be retrieved
+	 * @param string $section The name of the section in which the key should be set
+	 * @param PiniProperty $property The property to set
+	 */
+	public function setProperty($section, PiniProperty $property)
+	{
+		if (!isset($this->sections[$section]))
+		{
+			$this->addSection(new PiniSection($section));
+		}
+
+		/**
+		 * @var $sectionInstance PiniSection
+		 */
+		$sectionInstance = $this->sections[$section];
+
+		if (!isset($sectionInstance->properties[$property->name]))
+		{
+			$sectionInstance->addProperty($property);
+		}
+
+		$sectionInstance->properties[$property->name] = $property;
+	}
+
+	/**
+	 * Get the value of the specified property in the specified section
+	 * @param string $section The name of the section containing the property
+	 * @param string $key The name of the property of which the value should be retrieved
 	 *
-	 * @return null|string The value of the key in the section
+	 * @return array|null|string The value of the property or null if it does not exist
 	 */
 	public function getValue($section, $key)
 	{
-		if (!isset($this->data[$section]))
+		$property = $this->getProperty($section, $key);
+		if (!$property)
 		{
 			return null;
 		}
 
-		if (!isset($this->data[$section][$key]))
-		{
-			return null;
-		}
-
-		return $this->data[$section][$key];
+		return $property->value;
 	}
 
 	/**
-	 * Set the value of the specified key in the specified section.
+	 * Set the value of the specified property in the specified section
 	 *
-	 * @param string $section The name of the section in which the key should be set
-	 * @param string $key The name of the key of which the value should be set
-	 * @param mixed $value The value of the key in the section
+	 * @param string $section The name of the section
+	 * @param string $key The name of the property
+	 * @param mixed $value The value of the property
 	 */
 	public function setValue($section, $key, $value)
 	{
-		if (!isset($this->data[$section]))
+		$property = $this->getProperty($section, $key);
+		if (!$property)
 		{
-			$this->data[$section] = array();
+			$property = new PiniProperty($key, $value);
 		}
 
-		$this->data[$section][$key] = $value;
+		$this->setProperty($section, $property);
 	}
 
 	/**
-	 * Merge the data of the given Pini instance into this instance.
+	 * Merge the sections of the given Pini instance into this instance.
 	 *
-	 * @param Pini $otherInstance The Pini instance of which the data should be merged into this instance
-	 * @param null|string $section An optional section name which should be merged (any other section will be omitted)
+	 * @param Pini $otherInstance The Pini instance of which the sections should be merged into this instance
 	 */
-	public function merge(Pini $otherInstance, $section = null)
+	public function merge(Pini $otherInstance)
 	{
-		$sourceData = $otherInstance->getData();
-
-		if ($section == null)
+		/**
+		 * @var $section PiniSection
+		 */
+		foreach ($otherInstance->sections as $section)
 		{
-			foreach ($sourceData as $section => $data)
+			if (isset($this->sections[$section->name]))
 			{
-				$this->merge($otherInstance, $section);
+				/**
+				 * @var $thisSection PiniSection
+				 */
+				$thisSection = $this->sections[$section->name];
+
+				$thisSection->merge($section);
 			}
-			return;
-		}
-
-		if (!isset($sourceData[$section]))
-		{
-			return;
-		}
-
-		if (!isset($this->data[$section]))
-		{
-			$this->data[$section] = array();
-		}
-
-		foreach ($sourceData[$section] as $key => $value)
-		{
-			$this->data[$section][$key] = $value;
+			else
+			{
+				$this->addSection($section);
+			}
 		}
 	}
 
@@ -225,7 +264,7 @@ class Pini
 			return false;
 		}
 
-		$this->data = array();
+		$this->init();
 
 		while (($line = fgets($file)) !== false)
 		{
@@ -261,22 +300,38 @@ class Pini
 			return false;
 		}
 
-		foreach ($this->data as $section => $properties)
+		/**
+		 * @var $section PiniSection
+		 */
+		foreach ($this->sections as $section)
 		{
-			fputs($file, "[" . $section . "]\n");
-
-			foreach ($properties as $key => $value)
+			foreach ($section->comment as $commentLine)
 			{
-				if (is_array($value))
+				fputs($file, ";" . $commentLine . "\n");
+			}
+
+			fputs($file, "[" . $section->name . "]\n");
+
+			/**
+			 * @var $property PiniProperty
+			 */
+			foreach ($section->properties as $property)
+			{
+				foreach ($property->comment as $commentLine)
 				{
-					foreach ($value as $arrayValue)
+					fputs($file, ";" . $commentLine . "\n");
+				}
+
+				if (is_array($property->value))
+				{
+					foreach ($property->value as $arrayValue)
 					{
-						fputs($file, $key . "[] = " . $arrayValue . "\n");
+						fputs($file, $property->name . "[] = " . $arrayValue . "\n");
 					}
 				}
 				else
 				{
-					fputs($file, $key . " = " . $value . "\n");
+					fputs($file, $property->name . " = " . $property->value . "\n");
 				}
 			}
 		}

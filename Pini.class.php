@@ -258,6 +258,11 @@ class Pini
 			}
 		}
 
+		if (!file_exists($filename))
+		{
+			return false;
+		}
+
 		$file = fopen($filename, "r");
 		if (!$file)
 		{

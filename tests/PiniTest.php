@@ -13,7 +13,7 @@ class PiniTest extends PHPUnit_Framework_TestCase
 	public function testMerge()
 	{
 		$ini = new Pini(__DIR__ . "/../examples/example.ini");
-		$ini2 = new Pini(__DIR__ . "/../examples/example3.ini");
+		$ini2 = new Pini(__DIR__ . "/../examples/example-merge.ini");
 
 		$ini->merge($ini2);
 
@@ -30,7 +30,7 @@ class PiniTest extends PHPUnit_Framework_TestCase
 	public function testMergeArray()
 	{
 		$ini = new Pini(__DIR__ . "/../examples/example.ini");
-		$ini2 = new Pini(__DIR__ . "/../examples/example3.ini");
+		$ini2 = new Pini(__DIR__ . "/../examples/example-merge.ini");
 
 		$ini->merge($ini2);
 

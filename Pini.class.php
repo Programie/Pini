@@ -29,6 +29,11 @@ class Pini
 		$this->load();
 	}
 
+	/**
+	 * Initialize the content of the ini file
+	 *
+	 * Note: This will remove all sections from the ini file!
+	 */
 	private function init()
 	{
 		$this->commentBlock = array();

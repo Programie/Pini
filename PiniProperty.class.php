@@ -14,6 +14,10 @@ class PiniProperty
 	 */
 	public $comment;
 
+	/**
+	 * @param string $name The name for the property
+	 * @param string|array $value The value for the property
+	 */
 	public function __construct($name, $value = null)
 	{
 		$this->name = $name;

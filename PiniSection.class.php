@@ -14,6 +14,10 @@ class PiniSection
 	 */
 	public $properties;
 
+	/**
+	 * @param string $name The name for the section
+	 * @param array $comment A list of comment lines for this section
+	 */
 	public function __construct($name = "", $comment = array())
 	{
 		$this->name = $name;
@@ -22,11 +26,24 @@ class PiniSection
 		$this->properties = array();
 	}
 
+	/**
+	 * Add the specified property to the section.
+	 *
+	 * Note: Any existing property with the same name will be overwritten!
+	 *
+	 * @param PiniProperty $property The property to add
+	 */
 	public function addProperty(PiniProperty $property)
 	{
 		$this->properties[$property->name] = $property;
 	}
 
+	/**
+	 * Get the instance of the specified property.
+	 *
+	 * @param string $name The name of the property
+	 * @return null|PiniProperty The property or null if not found
+	 */
 	public function getProperty($name)
 	{
 		if (!isset($this->properties[$name]))
@@ -37,6 +54,13 @@ class PiniSection
 		return $this->properties[$name];
 	}
 
+	/**
+	 * Merge the specified section into this section.
+	 *
+	 * Note: Any existing property with the same name will be overwritten!
+	 *
+	 * @param PiniSection $otherSection The section which should be merged
+	 */
 	public function merge(PiniSection $otherSection)
 	{
 		/**

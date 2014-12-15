@@ -150,6 +150,8 @@ class Pini
 	 * @param string $key The name of the property which should be retrieved
 	 *
 	 * @return null|PiniProperty The property or null if not found
+	 *
+	 * @deprecated
 	 */
 	public function getProperty($section, $key)
 	{
@@ -176,6 +178,8 @@ class Pini
 	 *
 	 * @param string $section The name of the section in which the key should be set
 	 * @param PiniProperty $property The property to set
+	 *
+	 * @deprecated
 	 */
 	public function setProperty($section, PiniProperty $property)
 	{
@@ -203,6 +207,8 @@ class Pini
 	 * @param string $key The name of the property of which the value should be retrieved
 	 *
 	 * @return array|null|string The value of the property or null if it does not exist
+	 *
+	 * @deprecated
 	 */
 	public function getValue($section, $key)
 	{
@@ -221,6 +227,8 @@ class Pini
 	 * @param string $section The name of the section
 	 * @param string $key The name of the property
 	 * @param mixed $value The value of the property
+	 *
+	 * @deprecated
 	 */
 	public function setValue($section, $key, $value)
 	{

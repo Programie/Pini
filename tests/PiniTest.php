@@ -7,7 +7,11 @@ class PiniTest extends PHPUnit_Framework_TestCase
 	{
 		$ini = new Pini(__DIR__ . "/../examples/example.ini");
 
-		$this->assertEquals("some value", $ini->getValue("my section", "some key"));
+		$section = $ini->getSection("my section");
+
+		$property = $section->getProperty("some key");
+
+		$this->assertEquals("some value", $property->value);
 	}
 
 	public function testMerge()
@@ -17,14 +21,22 @@ class PiniTest extends PHPUnit_Framework_TestCase
 
 		$ini->merge($ini2);
 
-		$this->assertEquals("replaced value", $ini->getValue("my section", "some key"));
+		$section = $ini->getSection("my section");
+
+		$property = $section->getProperty("some key");
+
+		$this->assertEquals("replaced value", $property->value);
 	}
 
 	public function testArray()
 	{
 		$ini = new Pini(__DIR__ . "/../examples/example.ini");
 
-		$this->assertEquals(array("value", "other value", "even another value"), $ini->getValue("arrays", "myarray"));
+		$section = $ini->getSection("arrays");
+
+		$property = $section->getProperty("myarray");
+
+		$this->assertEquals(array("value", "other value", "even another value"), $property->value);
 	}
 
 	public function testMergeArray()
@@ -34,7 +46,9 @@ class PiniTest extends PHPUnit_Framework_TestCase
 
 		$ini->merge($ini2);
 
-		$property = $ini->getProperty("arrays", "myarray");
+		$section = $ini->getSection("arrays");
+
+		$property = $section->getProperty("myarray");
 
 		$this->assertEquals(array("replaced"), $property->value);
 	}
@@ -46,13 +60,19 @@ class PiniTest extends PHPUnit_Framework_TestCase
 		$ini = new Pini($filename);
 
 		$property = new PiniProperty("some key", "some value");
-		$ini->setProperty("some section", $property);
+
+		$section = new PiniSection("some section");
+		$section->addProperty($property);
+
+		$ini->addSection($section);
 
 		$ini->save();
 
 		$ini2 = new Pini($filename);
 
-		$property2 = $ini2->getProperty("some section", "some key");
+		$section2 = $ini2->getSection("some section");
+
+		$property2 = $section2->getProperty("some key");
 
 		$this->assertEquals("some value", $property2->value);
 
@@ -66,13 +86,19 @@ class PiniTest extends PHPUnit_Framework_TestCase
 		$ini = new Pini($filename);
 
 		$property = new PiniProperty("some key", array("value 1", "value 2"));
-		$ini->setProperty("some section", $property);
+
+		$section = new PiniSection("some section");
+		$section->addProperty($property);
+
+		$ini->addSection($section);
 
 		$ini->save();
 
 		$ini2 = new Pini($filename);
 
-		$property2 = $ini2->getProperty("some section", "some key");
+		$section2 = $ini2->getSection("some section");
+
+		$property2 = $section2->getProperty("some key");
 
 		$this->assertEquals(array("value 1", "value 2"), $property2->value);
 
@@ -85,19 +111,21 @@ class PiniTest extends PHPUnit_Framework_TestCase
 
 		$ini = new Pini($filename);
 
-		$property1 = new PiniProperty("some key", "This value will be replaced");
-		$property2 = new PiniProperty("some other key", "This value will not be replaced");
+		$section = new PiniSection("some section");
 
-		$ini->setProperty("some section", $property1);
-		$ini->setProperty("some section", $property2);
+		$section->addProperty(new PiniProperty("some key", "This value will be replaced"));
+		$section->addProperty(new PiniProperty("some other key", "This value will not be replaced"));
+
+		$ini->addSection($section);
 
 		$ini2 = new Pini();
 
-		$property3 = new PiniProperty("some key", "Replaced value");
-		$property4 = new PiniProperty("some additional key", "New value");
+		$section2 = new PiniSection("some section");
 
-		$ini2->setProperty("some section", $property3);
-		$ini2->setProperty("some section", $property4);
+		$section2->addProperty(new PiniProperty("some key", "Replaced value"));
+		$section2->addProperty(new PiniProperty("some additional key", "New value"));
+
+		$ini2->addSection($section2);
 
 		$ini->merge($ini2);
 
@@ -105,13 +133,15 @@ class PiniTest extends PHPUnit_Framework_TestCase
 
 		$ini3 = new Pini($filename);
 
-		$property5 = $ini3->getProperty("some section", "some key");
-		$property6 = $ini3->getProperty("some section", "some other key");
-		$property7 = $ini3->getProperty("some section", "some additional key");
+		$section3 = $ini3->getSection("some section");
 
-		$this->assertEquals("Replaced value", $property5->value);
-		$this->assertEquals("This value will not be replaced", $property6->value);
-		$this->assertEquals("New value", $property7->value);
+		$property1 = $section3->getProperty("some key");
+		$property2 = $section3->getProperty("some other key");
+		$property3 = $section3->getProperty("some additional key");
+
+		$this->assertEquals("Replaced value", $property1->value);
+		$this->assertEquals("This value will not be replaced", $property2->value);
+		$this->assertEquals("New value", $property3->value);
 
 		unlink($filename);
 	}

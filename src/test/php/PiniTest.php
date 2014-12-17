@@ -147,4 +147,36 @@ class PiniTest extends PHPUnit_Framework_TestCase
 
 		unlink($filename);
 	}
+
+	public function testGetSection()
+	{
+		$ini = new Pini(__DIR__ . "/../../../examples/example.ini");
+
+		$this->assertInstanceOf("com\\selfcoders\\pini\\Section", $ini->getSection("my section"));
+	}
+
+	public function testGetNotExistingSection()
+	{
+		$ini = new Pini(__DIR__ . "/../../../examples/example.ini");
+
+		$this->assertNull($ini->getSection("not existing section"));
+	}
+
+	public function testGetProperty()
+	{
+		$ini = new Pini(__DIR__ . "/../../../examples/example.ini");
+
+		$section = $ini->getSection("my section");
+
+		$this->assertInstanceOf("com\\selfcoders\\pini\\Property", $section->getProperty("some key"));
+	}
+
+	public function testGetNotExistingProperty()
+	{
+		$ini = new Pini(__DIR__ . "/../../../examples/example.ini");
+
+		$section = $ini->getSection("my section");
+
+		$this->assertNull($section->getProperty("not existing key"));
+	}
 }

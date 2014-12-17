@@ -117,8 +117,13 @@ class PiniTest extends PHPUnit_Framework_TestCase
 
 		$section->comment = array("A section comment");
 
-		$section->addProperty(new Property("some key", "This value will be replaced"));
-		$section->addProperty(new Property("some other key", "This value will not be replaced"));
+		$property1 = new Property("some key", "This value will be replaced");
+		$property1->comment = array("A property comment");
+		$section->addProperty($property1);
+
+		$property2 = new Property("some other key", "This value will not be replaced");
+		$property2->comment = array("Another property comment");
+		$section->addProperty($property2);
 
 		$ini->addSection($section);
 
@@ -127,7 +132,10 @@ class PiniTest extends PHPUnit_Framework_TestCase
 		$section2 = new Section("some section");
 
 		$section2->addProperty(new Property("some key", "Replaced value"));
-		$section2->addProperty(new Property("some additional key", "New value"));
+
+		$property3 = new Property("some additional key", "New value");
+		$property3->comment = array("Even another property comment");
+		$section2->addProperty($property3);
 
 		$ini2->addSection($section2);
 
@@ -141,13 +149,17 @@ class PiniTest extends PHPUnit_Framework_TestCase
 
 		$this->assertEquals(array("A section comment"), $section3->comment);
 
-		$property1 = $section3->getProperty("some key");
-		$property2 = $section3->getProperty("some other key");
-		$property3 = $section3->getProperty("some additional key");
+		$property4 = $section3->getProperty("some key");
+		$property5 = $section3->getProperty("some other key");
+		$property6 = $section3->getProperty("some additional key");
 
-		$this->assertEquals("Replaced value", $property1->value);
-		$this->assertEquals("This value will not be replaced", $property2->value);
-		$this->assertEquals("New value", $property3->value);
+		$this->assertEmpty($property4->comment);
+		$this->assertEquals(array("Another property comment"), $property5->comment);
+		$this->assertEquals(array("Even another property comment"), $property6->comment);
+
+		$this->assertEquals("Replaced value", $property4->value);
+		$this->assertEquals("This value will not be replaced", $property5->value);
+		$this->assertEquals("New value", $property6->value);
 
 		unlink($filename);
 	}

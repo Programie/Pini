@@ -115,6 +115,8 @@ class PiniTest extends PHPUnit_Framework_TestCase
 
 		$section = new Section("some section");
 
+		$section->comment = array("A section comment");
+
 		$section->addProperty(new Property("some key", "This value will be replaced"));
 		$section->addProperty(new Property("some other key", "This value will not be replaced"));
 
@@ -136,6 +138,8 @@ class PiniTest extends PHPUnit_Framework_TestCase
 		$ini3 = new Pini($filename);
 
 		$section3 = $ini3->getSection("some section");
+
+		$this->assertEquals(array("A section comment"), $section3->comment);
 
 		$property1 = $section3->getProperty("some key");
 		$property2 = $section3->getProperty("some other key");

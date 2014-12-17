@@ -1,5 +1,7 @@
 <?php
-require_once __DIR__ . "/../Pini.class.php";
+require_once __DIR__ . "/../src/main/php/com/selfcoders/pini/Pini.php";
+
+use com\selfcoders\pini\Pini;
 
 $ini = new Pini(__DIR__ . "/example.ini");
 

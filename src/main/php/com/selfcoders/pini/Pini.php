@@ -1,6 +1,8 @@
 <?php
-require_once __DIR__ . "/PiniSection.class.php";
-require_once __DIR__ . "/PiniProperty.class.php";
+namespace com\selfcoders\pini;
+
+require_once __DIR__ . "/Section.php";
+require_once __DIR__ . "/Property.php";
 
 class Pini
 {
@@ -65,7 +67,7 @@ class Pini
 		// Parse a section in format "[name]"
 		if ($line[0] == "[" and $line[strlen($line) - 1] == "]")
 		{
-			$this->currentSection = new PiniSection(substr($line, 1, strlen($line) - 2), $this->commentBlock);
+			$this->currentSection = new Section(substr($line, 1, strlen($line) - 2), $this->commentBlock);
 			$this->addSection($this->currentSection);
 
 			$this->commentBlock = array();
@@ -81,7 +83,7 @@ class Pini
 		// No section defined yet -> Create a new default section without a name
 		if (!$this->currentSection)
 		{
-			$this->currentSection = new PiniSection();
+			$this->currentSection = new Section();
 			$this->addSection($this->currentSection);
 		}
 
@@ -94,7 +96,7 @@ class Pini
 			$property = $this->currentSection->getProperty($key);
 			if (!$property)
 			{
-				$property = new PiniProperty($key, array());
+				$property = new Property($key, array());
 				$this->currentSection->addProperty($property);
 			}
 
@@ -106,7 +108,7 @@ class Pini
 			$property = $this->currentSection->getProperty($key);
 			if (!$property)
 			{
-				$property = new PiniProperty($key);
+				$property = new Property($key);
 				$this->currentSection->addProperty($property);
 			}
 
@@ -120,9 +122,9 @@ class Pini
 	/**
 	 * Add the given section.
 	 *
-	 * @param PiniSection $section The instance of the section
+	 * @param Section $section The instance of the section
 	 */
-	public function addSection(PiniSection $section)
+	public function addSection(Section $section)
 	{
 		$this->sections[$section->name] = $section;
 	}
@@ -131,7 +133,7 @@ class Pini
 	 * Get the instance of the specified section.
 	 *
 	 * @param string $name The name of the section to retrieve
-	 * @return null|PiniSection The section or null if not found
+	 * @return null|Section The section or null if not found
 	 */
 	public function getSection($name)
 	{
@@ -149,7 +151,7 @@ class Pini
 	 * @param string $section The name of the section from which the property should be retrieved
 	 * @param string $key The name of the property which should be retrieved
 	 *
-	 * @return null|PiniProperty The property or null if not found
+	 * @return null|Property The property or null if not found
 	 *
 	 * @deprecated
 	 */
@@ -161,7 +163,7 @@ class Pini
 		}
 
 		/**
-		 * @var $sectionInstance PiniSection
+		 * @var $sectionInstance Section
 		 */
 		$sectionInstance = $this->sections[$section];
 
@@ -177,19 +179,19 @@ class Pini
 	 * Set the property in the specified section
 	 *
 	 * @param string $section The name of the section in which the key should be set
-	 * @param PiniProperty $property The property to set
+	 * @param Property $property The property to set
 	 *
 	 * @deprecated
 	 */
-	public function setProperty($section, PiniProperty $property)
+	public function setProperty($section, Property $property)
 	{
 		if (!isset($this->sections[$section]))
 		{
-			$this->addSection(new PiniSection($section));
+			$this->addSection(new Section($section));
 		}
 
 		/**
-		 * @var $sectionInstance PiniSection
+		 * @var $sectionInstance Section
 		 */
 		$sectionInstance = $this->sections[$section];
 
@@ -235,7 +237,7 @@ class Pini
 		$property = $this->getProperty($section, $key);
 		if (!$property)
 		{
-			$property = new PiniProperty($key, $value);
+			$property = new Property($key, $value);
 		}
 
 		$this->setProperty($section, $property);
@@ -249,14 +251,14 @@ class Pini
 	public function merge(Pini $otherInstance)
 	{
 		/**
-		 * @var $section PiniSection
+		 * @var $section Section
 		 */
 		foreach ($otherInstance->sections as $section)
 		{
 			if (isset($this->sections[$section->name]))
 			{
 				/**
-				 * @var $thisSection PiniSection
+				 * @var $thisSection Section
 				 */
 				$thisSection = $this->sections[$section->name];
 
@@ -335,7 +337,7 @@ class Pini
 		}
 
 		/**
-		 * @var $section PiniSection
+		 * @var $section Section
 		 */
 		foreach ($this->sections as $section)
 		{
@@ -347,7 +349,7 @@ class Pini
 			fputs($file, "[" . $section->name . "]\n");
 
 			/**
-			 * @var $property PiniProperty
+			 * @var $property Property
 			 */
 			foreach ($section->properties as $property)
 			{

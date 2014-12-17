@@ -1,5 +1,7 @@
 <?php
-class PiniSection
+namespace com\selfcoders\pini;
+
+class Section
 {
 	/**
 	 * @var string The name of the section
@@ -10,7 +12,7 @@ class PiniSection
 	 */
 	public $comment;
 	/**
-	 * @var array A list of PiniProperty instances added to the section
+	 * @var array A list of Property instances added to the section
 	 */
 	public $properties;
 
@@ -31,9 +33,9 @@ class PiniSection
 	 *
 	 * Note: Any existing property with the same name will be overwritten!
 	 *
-	 * @param PiniProperty $property The property to add
+	 * @param Property $property The property to add
 	 */
-	public function addProperty(PiniProperty $property)
+	public function addProperty(Property $property)
 	{
 		$this->properties[$property->name] = $property;
 	}
@@ -42,7 +44,7 @@ class PiniSection
 	 * Get the instance of the specified property.
 	 *
 	 * @param string $name The name of the property
-	 * @return null|PiniProperty The property or null if not found
+	 * @return null|Property The property or null if not found
 	 */
 	public function getProperty($name)
 	{
@@ -59,12 +61,12 @@ class PiniSection
 	 *
 	 * Note: Any existing property with the same name will be overwritten!
 	 *
-	 * @param PiniSection $otherSection The section which should be merged
+	 * @param Section $otherSection The section which should be merged
 	 */
-	public function merge(PiniSection $otherSection)
+	public function merge(Section $otherSection)
 	{
 		/**
-		 * @var $property PiniProperty
+		 * @var $property Property
 		 */
 		foreach ($otherSection->properties as $property)
 		{

@@ -1,11 +1,13 @@
 <?php
-require_once __DIR__ . "/../Pini.class.php";
+use com\selfcoders\pini\Pini;
+use com\selfcoders\pini\Property;
+use com\selfcoders\pini\Section;
 
 class PiniTest extends PHPUnit_Framework_TestCase
 {
 	public function testReadValue()
 	{
-		$ini = new Pini(__DIR__ . "/../examples/example.ini");
+		$ini = new Pini(__DIR__ . "/../../../examples/example.ini");
 
 		$section = $ini->getSection("my section");
 
@@ -16,8 +18,8 @@ class PiniTest extends PHPUnit_Framework_TestCase
 
 	public function testMerge()
 	{
-		$ini = new Pini(__DIR__ . "/../examples/example.ini");
-		$ini2 = new Pini(__DIR__ . "/../examples/example-merge.ini");
+		$ini = new Pini(__DIR__ . "/../../../examples/example.ini");
+		$ini2 = new Pini(__DIR__ . "/../../../examples/example-merge.ini");
 
 		$ini->merge($ini2);
 
@@ -30,7 +32,7 @@ class PiniTest extends PHPUnit_Framework_TestCase
 
 	public function testArray()
 	{
-		$ini = new Pini(__DIR__ . "/../examples/example.ini");
+		$ini = new Pini(__DIR__ . "/../../../examples/example.ini");
 
 		$section = $ini->getSection("arrays");
 
@@ -41,8 +43,8 @@ class PiniTest extends PHPUnit_Framework_TestCase
 
 	public function testMergeArray()
 	{
-		$ini = new Pini(__DIR__ . "/../examples/example.ini");
-		$ini2 = new Pini(__DIR__ . "/../examples/example-merge.ini");
+		$ini = new Pini(__DIR__ . "/../../../examples/example.ini");
+		$ini2 = new Pini(__DIR__ . "/../../../examples/example-merge.ini");
 
 		$ini->merge($ini2);
 
@@ -59,9 +61,9 @@ class PiniTest extends PHPUnit_Framework_TestCase
 
 		$ini = new Pini($filename);
 
-		$property = new PiniProperty("some key", "some value");
+		$property = new Property("some key", "some value");
 
-		$section = new PiniSection("some section");
+		$section = new Section("some section");
 		$section->addProperty($property);
 
 		$ini->addSection($section);
@@ -85,9 +87,9 @@ class PiniTest extends PHPUnit_Framework_TestCase
 
 		$ini = new Pini($filename);
 
-		$property = new PiniProperty("some key", array("value 1", "value 2"));
+		$property = new Property("some key", array("value 1", "value 2"));
 
-		$section = new PiniSection("some section");
+		$section = new Section("some section");
 		$section->addProperty($property);
 
 		$ini->addSection($section);
@@ -111,19 +113,19 @@ class PiniTest extends PHPUnit_Framework_TestCase
 
 		$ini = new Pini($filename);
 
-		$section = new PiniSection("some section");
+		$section = new Section("some section");
 
-		$section->addProperty(new PiniProperty("some key", "This value will be replaced"));
-		$section->addProperty(new PiniProperty("some other key", "This value will not be replaced"));
+		$section->addProperty(new Property("some key", "This value will be replaced"));
+		$section->addProperty(new Property("some other key", "This value will not be replaced"));
 
 		$ini->addSection($section);
 
 		$ini2 = new Pini();
 
-		$section2 = new PiniSection("some section");
+		$section2 = new Section("some section");
 
-		$section2->addProperty(new PiniProperty("some key", "Replaced value"));
-		$section2->addProperty(new PiniProperty("some additional key", "New value"));
+		$section2->addProperty(new Property("some key", "Replaced value"));
+		$section2->addProperty(new Property("some additional key", "New value"));
 
 		$ini2->addSection($section2);
 

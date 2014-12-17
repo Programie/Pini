@@ -1,5 +1,7 @@
 <?php
-class PiniProperty
+namespace com\selfcoders\pini;
+
+class Property
 {
 	/**
 	 * @var string The name of the property

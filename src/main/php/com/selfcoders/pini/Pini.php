@@ -1,9 +1,6 @@
 <?php
 namespace com\selfcoders\pini;
 
-require_once __DIR__ . "/Section.php";
-require_once __DIR__ . "/Property.php";
-
 class Pini
 {
 	/**

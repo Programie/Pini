@@ -1,11 +1,9 @@
 <?php
-require_once __DIR__ . "/../src/main/php/com/selfcoders/pini/Pini.php";
-require_once __DIR__ . "/../src/main/php/com/selfcoders/pini/Section.php";
-require_once __DIR__ . "/../src/main/php/com/selfcoders/pini/Property.php";
-
 use com\selfcoders\pini\Pini;
 use com\selfcoders\pini\Property;
 use com\selfcoders\pini\Section;
+
+require_once __DIR__ . "/../vendor/autoload.php";
 
 $ini = new Pini();
 

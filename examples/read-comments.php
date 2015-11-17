@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . "/../src/main/php/com/selfcoders/pini/Pini.php";
-
 use com\selfcoders\pini\Pini;
+
+require_once __DIR__ . "/../vendor/autoload.php";
 
 $ini = new Pini(__DIR__ . "/example.ini");
 

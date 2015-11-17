@@ -10,3 +10,7 @@ $section = $ini->getSection("my section");
 $property = $section->getProperty("some key");
 
 echo $property->value;// This will return "some value"
+
+echo $section->getPropertyValue("some key");// This will also return "some value"
+
+echo $section->getPropertyValue("not existing key", "fallback value");// This will return "fallback value" as the key does not exist

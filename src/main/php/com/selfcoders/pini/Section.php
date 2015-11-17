@@ -57,6 +57,27 @@ class Section
 	}
 
 	/**
+	 * Get the value of the specified property.
+	 *
+	 * This is a shortcut for getProperty()->value.
+	 *
+	 * @param string $name The name of the property
+	 * @param mixed|null $defaultValue The default value to return if the property does not exist
+	 *
+	 * @return mixed The property value or value specified in $defaultValue if the property does not exist
+	 */
+	public function getPropertyValue($name, $defaultValue = null)
+	{
+		$property = $this->getProperty($name);
+		if ($property === null)
+		{
+			return $defaultValue;
+		}
+
+		return $property->value;
+	}
+
+	/**
 	 * Merge the specified section into this section.
 	 *
 	 * Note: Any existing property with the same name will be overwritten!

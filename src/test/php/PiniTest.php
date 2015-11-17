@@ -195,4 +195,40 @@ class PiniTest extends PHPUnit_Framework_TestCase
 
 		$this->assertNull($section->getProperty("not existing key"));
 	}
+
+	public function testGetPropertyValue()
+	{
+		$ini = new Pini(__DIR__ . "/../../../examples/example.ini");
+
+		$section = $ini->getSection("my section");
+
+		$this->assertEquals("some value", $section->getPropertyValue("some key"));
+	}
+
+	public function testGetNotExistingPropertyValue()
+	{
+		$ini = new Pini(__DIR__ . "/../../../examples/example.ini");
+
+		$section = $ini->getSection("my section");
+
+		$this->assertNull($section->getPropertyValue("not existing key"));
+	}
+
+	public function testGetPropertyValueWithDefault()
+	{
+		$ini = new Pini(__DIR__ . "/../../../examples/example.ini");
+
+		$section = $ini->getSection("my section");
+
+		$this->assertEquals("some value", $section->getPropertyValue("some key", "fallback value"));
+	}
+
+	public function testGetNotExistingPropertyValueWithDefault()
+	{
+		$ini = new Pini(__DIR__ . "/../../../examples/example.ini");
+
+		$section = $ini->getSection("my section");
+
+		$this->assertEquals("fallback value", $section->getPropertyValue("not existing key", "fallback value"));
+	}
 }

@@ -94,4 +94,35 @@ class Section
 			$this->addProperty($property);
 		}
 	}
+
+	/**
+	 * Write all properties of this section to the given file handle.
+	 *
+	 * @param resource $fileHandle The file handle to write to (e.g. returned by fopen())
+	 */
+	public function writePropertiesToFile($fileHandle)
+	{
+		/**
+		 * @var $property Property
+		 */
+		foreach ($this->properties as $property)
+		{
+			foreach ($property->comment as $commentLine)
+			{
+				fputs($fileHandle, ";" . $commentLine . "\n");
+			}
+
+			if (is_array($property->value))
+			{
+				foreach ($property->value as $arrayValue)
+				{
+					fputs($fileHandle, $property->name . "[] = " . $arrayValue . "\n");
+				}
+			}
+			else
+			{
+				fputs($fileHandle, $property->name . " = " . $property->value . "\n");
+			}
+		}
+	}
 }

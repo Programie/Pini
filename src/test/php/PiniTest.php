@@ -81,6 +81,29 @@ class PiniTest extends PHPUnit_Framework_TestCase
 		unlink($filename);
 	}
 
+	public function testSaveDefaultSection()
+	{
+		$filename = tempnam(sys_get_temp_dir(), "ini");
+
+		$ini = new Pini($filename);
+
+		$section = new Section("some section");
+		$section->addProperty(new Property("some key", "some value"));
+
+		$ini->addSection($section);
+
+		$ini->getDefaultSection()->addProperty(new Property("some key", "some value in default section"));
+
+		$ini->save();
+
+		$ini2 = new Pini($filename);
+
+		$this->assertEquals("some value", $ini2->getSection("some section")->getPropertyValue("some key"));
+		$this->assertEquals("some value in default section", $ini2->getDefaultSection()->getPropertyValue("some key"));
+
+		unlink($filename);
+	}
+
 	public function testSaveArray()
 	{
 		$filename = tempnam(sys_get_temp_dir(), "ini");
@@ -230,5 +253,14 @@ class PiniTest extends PHPUnit_Framework_TestCase
 		$section = $ini->getSection("my section");
 
 		$this->assertEquals("fallback value", $section->getPropertyValue("not existing key", "fallback value"));
+	}
+
+	public function testGetPropertyFromDefaultSection()
+	{
+		$ini = new Pini(__DIR__ . "/../../../examples/example.ini");
+
+		$section = $ini->getDefaultSection();
+
+		$this->assertEquals("value in default section", $section->getPropertyValue("some key"));
 	}
 }

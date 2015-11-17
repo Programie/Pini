@@ -19,4 +19,14 @@ $property = new Property("integer value", "12345");
 $property->comment = array("This is a comment for the integer value property");
 $section->addProperty($property);
 
+$section = $ini->getDefaultSection();
+
+$section->addProperty(new Property("some key", "this property is in the default section"));
+
+$section = new Section("another section");
+
+$ini->addSection($section);
+
+$section->addProperty(new Property("my array", array(1, 2, 3, 4, 5)));
+
 $ini->save(__DIR__ . "/example-write.ini");

@@ -8,112 +8,15 @@ class Pini
 	 */
 	private $filename;
 	/**
-	 * @var array An array containing all PiniSection instances
+	 * @var array An array containing all Section instances
 	 */
-	public $sections;
-	/**
-	 * @var string The name of the currently parsing section
-	 */
-	private $currentSection;
-	/**
-	 * @var array The content of the currently reading comment block
-	 */
-	private $commentBlock;
+	public $sections = array();
 
 	public function __construct($filename = null)
 	{
 		$this->filename = $filename;
 
-		$this->init();
 		$this->load();
-	}
-
-	/**
-	 * Initialize the content of the ini file
-	 *
-	 * Note: This will remove all sections from the ini file!
-	 */
-	private function init()
-	{
-		$this->commentBlock = array();
-		$this->sections = array();
-	}
-
-	/**
-	 * Parse the given line.
-	 *
-	 * @param string $line The line to parse
-	 */
-	private function parseLine($line)
-	{
-		$line = trim($line);
-
-		// Ignore empty lines
-		if (!$line)
-		{
-			return;
-		}
-
-		// This line is a comment -> skip it
-		if ($line[0] == ";")
-		{
-			$this->commentBlock[] = substr($line, 1);
-			return;
-		}
-
-		// Parse a section in format "[name]"
-		if ($line[0] == "[" and $line[strlen($line) - 1] == "]")
-		{
-			$this->currentSection = new Section(substr($line, 1, strlen($line) - 2), $this->commentBlock);
-			$this->addSection($this->currentSection);
-
-			$this->commentBlock = array();
-			return;
-		}
-
-		// Parse the line in format "key = value"
-		list($key, $value) = explode("=", $line, 2);
-
-		$key = trim($key);
-		$value = trim($value);
-
-		// No section defined yet -> Create a new default section without a name
-		if (!$this->currentSection)
-		{
-			$this->currentSection = new Section();
-			$this->addSection($this->currentSection);
-		}
-
-		// The key of key-array pairs end with "[]" (e.g. value[])
-		if (substr($key, -2) == "[]")
-		{
-			// This is a key-array pair (a key with multiple values)
-			$key = substr($key, 0, -2);
-
-			$property = $this->currentSection->getProperty($key);
-			if (!$property)
-			{
-				$property = new Property($key, array());
-				$this->currentSection->addProperty($property);
-			}
-
-			$property->value[] = $value;
-		}
-		else
-		{
-			// This is a normal key-value pair
-			$property = $this->currentSection->getProperty($key);
-			if (!$property)
-			{
-				$property = new Property($key);
-				$this->currentSection->addProperty($property);
-			}
-
-			$property->value = $value;
-		}
-
-		$property->comment = $this->commentBlock;
-		$this->commentBlock = array();
 	}
 
 	/**
@@ -140,6 +43,37 @@ class Pini
 		}
 
 		return $this->sections[$name];
+	}
+
+	/**
+	 * Get the instance of the default section.
+	 *
+	 * The default section contains all properties outside of any section.
+	 *
+	 * A new section will be created if there is no default section yet.
+	 *
+	 * @return Section The instance of the default section
+	 */
+	public function getDefaultSection()
+	{
+		$section = $this->getSection("");
+		if ($section === null)
+		{
+			$section = new Section;
+			$this->addSection($section);
+		}
+
+		return $section;
+	}
+
+	/**
+	 * Remove all sections.
+	 *
+	 * Note: This will not destroy the section instances.
+	 */
+	public function removeAllSections()
+	{
+		$this->sections = array();
 	}
 
 	/**
@@ -193,20 +127,19 @@ class Pini
 			return false;
 		}
 
-		$file = fopen($filename, "r");
-		if (!$file)
+		$fileHandle = fopen($filename, "r");
+		if ($fileHandle === false)
 		{
 			return false;
 		}
 
-		$this->init();
+		$this->removeAllSections();
 
-		while (($line = fgets($file)) !== false)
-		{
-			$this->parseLine($line);
-		}
+		$parser = new Parser($this);
 
-		fclose($file);
+		$parser->readFromFile($fileHandle);
+
+		fclose($fileHandle);
 
 		return true;
 	}
@@ -235,11 +168,25 @@ class Pini
 			return false;
 		}
 
+		$defaultSection = $this->getDefaultSection();
+
+		foreach ($defaultSection->comment as $commentLine)
+		{
+			fputs($file, ";" . $commentLine . "\n");
+		}
+
+		$defaultSection->writePropertiesToFile($file);
+
 		/**
 		 * @var $section Section
 		 */
 		foreach ($this->sections as $section)
 		{
+			if ($section->name == "")
+			{
+				continue;
+			}
+
 			foreach ($section->comment as $commentLine)
 			{
 				fputs($file, ";" . $commentLine . "\n");
@@ -247,28 +194,7 @@ class Pini
 
 			fputs($file, "[" . $section->name . "]\n");
 
-			/**
-			 * @var $property Property
-			 */
-			foreach ($section->properties as $property)
-			{
-				foreach ($property->comment as $commentLine)
-				{
-					fputs($file, ";" . $commentLine . "\n");
-				}
-
-				if (is_array($property->value))
-				{
-					foreach ($property->value as $arrayValue)
-					{
-						fputs($file, $property->name . "[] = " . $arrayValue . "\n");
-					}
-				}
-				else
-				{
-					fputs($file, $property->name . " = " . $property->value . "\n");
-				}
-			}
+			$section->writePropertiesToFile($file);
 		}
 
 		fclose($file);

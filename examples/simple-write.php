@@ -5,7 +5,7 @@ use com\selfcoders\pini\Section;
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
-$ini = new Pini();
+$ini = new Pini;
 
 $section = new Section("my section");
 

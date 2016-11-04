@@ -8,7 +8,7 @@ class Pini
      */
     private $filename;
     /**
-     * @var array An array containing all Section instances
+     * @var Section[] An array containing all Section instances
      */
     public $sections = array();
 
@@ -81,9 +81,6 @@ class Pini
      */
     public function merge(Pini $otherInstance)
     {
-        /**
-         * @var $section Section
-         */
         foreach ($otherInstance->sections as $section) {
             if (isset($this->sections[$section->name])) {
                 /**
@@ -155,33 +152,31 @@ class Pini
             return false;
         }
 
-        $defaultSection = $this->getDefaultSection();
-
-        foreach ($defaultSection->comment as $commentLine) {
-            fputs($file, ";" . $commentLine . "\n");
-        }
-
-        $defaultSection->writePropertiesToFile($file);
-
-        /**
-         * @var $section Section
-         */
-        foreach ($this->sections as $section) {
-            if ($section->name == "") {
-                continue;
-            }
-
-            foreach ($section->comment as $commentLine) {
-                fputs($file, ";" . $commentLine . "\n");
-            }
-
-            fputs($file, "[" . $section->name . "]\n");
-
-            $section->writePropertiesToFile($file);
-        }
+        fwrite($file, $this);
 
         fclose($file);
 
         return true;
+    }
+
+    /**
+     * Get this instance as a string in INI format.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        $string = $this->getDefaultSection();
+
+        foreach ($this->sections as $section) {
+            // Skip default section as this has been already added to the string above.
+            if ($section->isDefaultSection()) {
+                continue;
+            }
+
+            $string .= $section;
+        }
+
+        return $string;
     }
 }

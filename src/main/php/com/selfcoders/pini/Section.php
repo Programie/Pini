@@ -12,12 +12,12 @@ class Section
      */
     public $comment;
     /**
-     * @var array A list of Property instances added to the section
+     * @var Property[] A list of Property instances added to the section
      */
     public $properties;
 
     /**
-     * @param string $name The name for the section
+     * @param string $name The name for the section, an empty name will make this the default section
      * @param array $comment A list of comment lines for this section
      */
     public function __construct($name = "", $comment = array())
@@ -84,36 +84,54 @@ class Section
      */
     public function merge(Section $otherSection)
     {
-        /**
-         * @var $property Property
-         */
         foreach ($otherSection->properties as $property) {
             $this->addProperty($property);
         }
     }
 
     /**
+     * Check whether this section is the default section (properties are not in a specific section).
+     *
+     * @return bool
+     */
+    public function isDefaultSection()
+    {
+        return $this->name === "";
+    }
+
+    /**
      * Write all properties of this section to the given file handle.
      *
      * @param resource $fileHandle The file handle to write to (e.g. returned by fopen())
+     *
+     * @deprecated Write this instance to a file using magic method "__toString()" which will then also include the section header and comment (fwrite($handle, $section)).
      */
     public function writePropertiesToFile($fileHandle)
     {
-        /**
-         * @var $property Property
-         */
         foreach ($this->properties as $property) {
-            foreach ($property->comment as $commentLine) {
-                fputs($fileHandle, ";" . $commentLine . "\n");
-            }
-
-            if (is_array($property->value)) {
-                foreach ($property->value as $arrayValue) {
-                    fputs($fileHandle, $property->name . "[] = " . $arrayValue . "\n");
-                }
-            } else {
-                fputs($fileHandle, $property->name . " = " . $property->value . "\n");
-            }
+            fwrite($fileHandle, $property);
         }
+    }
+
+    /**
+     * Get this section as a string in INI format.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        $string = "";
+
+        foreach ($this->comment as $commentLine) {
+            $string .= sprintf(";%s\n", $commentLine);
+        }
+
+        $string .= sprintf("[%s]\n", $this->name);
+
+        foreach ($this->properties as $property) {
+            $string .= $property;
+        }
+
+        return $string;
     }
 }

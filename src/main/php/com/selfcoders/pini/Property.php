@@ -26,4 +26,28 @@ class Property
         $this->value = $value;
         $this->comment = array();
     }
+
+    /**
+     * Get this property as a string in INI format.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        $string = "";
+
+        foreach ($this->comment as $commentLine) {
+            $string .= sprintf(";%s\n", $commentLine);
+        }
+
+        if (is_array($this->value)) {
+            foreach ($this->value as $value) {
+                $string .= sprintf("%s[] = %s\n", $this->name, $value);
+            }
+        } else {
+            $string .= sprintf("%s = %s\n", $this->name, $this->value);
+        }
+
+        return $string;
+    }
 }

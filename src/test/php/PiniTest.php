@@ -55,6 +55,17 @@ class PiniTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array("replaced"), $property->value);
     }
 
+    public function testBoolean()
+    {
+        $ini = new Pini(__DIR__ . "/../../../examples/example.ini");
+
+        $section = $ini->getSection("my section");
+
+        $this->assertNull($section->getProperty("some key")->boolean());
+        $this->assertTrue($section->getProperty("some bool")->boolean());
+        $this->assertFalse($section->getProperty("another bool")->boolean());
+    }
+
     public function testSave()
     {
         $filename = tempnam(sys_get_temp_dir(), "ini");

@@ -28,6 +28,30 @@ class Property
     }
 
     /**
+     * Get the value of this property as a boolean.
+     *
+     * "true" and "1" will result in true
+     * "false" and "0" will result in false
+     * everything else will result in null
+     *
+     * @return bool|null
+     */
+    public function boolean()
+    {
+        $value = strtolower($this->value);
+
+        if ($value === "true" or $value === "1") {
+            return true;
+        }
+
+        if ($value === "false" or $value === "0") {
+            return false;
+        }
+
+        return null;
+    }
+
+    /**
      * Get this property as a string in INI format.
      *
      * @return string

@@ -274,4 +274,15 @@ class PiniTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals("value in default section", $section->getPropertyValue("some key"));
     }
+
+    public function testEmptySection()
+    {
+        $ini = new Pini(__DIR__ . "/../../../examples/example.ini");
+
+        $this->assertCount(4, $ini->sections);
+        $this->assertCount(3, $ini->getNonEmptySections());
+
+        $this->assertTrue($ini->getSection("my section")->hasProperties());
+        $this->assertFalse($ini->getSection("empty")->hasProperties());
+    }
 }

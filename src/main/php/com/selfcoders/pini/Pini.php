@@ -65,6 +65,24 @@ class Pini
     }
 
     /**
+     * @return Section[]
+     */
+    public function getNonEmptySections()
+    {
+        $sections = array();
+
+        foreach ($this->sections as $section) {
+            if (!$section->hasProperties()) {
+                continue;
+            }
+
+            $sections[] = $section;
+        }
+
+        return $sections;
+    }
+
+    /**
      * Remove all sections.
      *
      * Note: This will not destroy the section instances.

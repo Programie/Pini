@@ -100,6 +100,14 @@ class Section
     }
 
     /**
+     * @return bool
+     */
+    public function hasProperties()
+    {
+        return !empty($this->properties);
+    }
+
+    /**
      * Write all properties of this section to the given file handle.
      *
      * @param resource $fileHandle The file handle to write to (e.g. returned by fopen())

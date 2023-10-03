@@ -9,7 +9,11 @@ A simple PHP class for reading and writing ini files.
 
 ## Installation
 
-Add the composer package "programie/pini" to the required packages of your composer.json.
+Add the composer package "programie/pini" to the required packages of your composer.json:
+
+```bash
+composer require programie/pini
+```
 
 ## Examples
 

@@ -2,4 +2,5 @@
 .AppleDouble
 ._*
 .idea
+.phpunit.result.cache
 vendor

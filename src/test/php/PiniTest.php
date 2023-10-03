@@ -2,8 +2,9 @@
 use com\selfcoders\pini\Pini;
 use com\selfcoders\pini\Property;
 use com\selfcoders\pini\Section;
+use PHPUnit\Framework\TestCase;
 
-class PiniTest extends PHPUnit_Framework_TestCase
+class PiniTest extends TestCase
 {
     public function testReadValue()
     {

@@ -6,6 +6,7 @@ A simple PHP class for reading and writing ini files.
 [![Latest Stable Version](https://poser.pugx.org/programie/pini/v/stable.svg)](https://packagist.org/packages/programie/pini)
 [![Latest Unstable Version](https://poser.pugx.org/programie/pini/v/unstable.svg)](https://packagist.org/packages/programie/pini)
 [![Total Downloads](https://poser.pugx.org/programie/pini/downloads.svg)](https://packagist.org/packages/programie/pini)
+[![codecov](https://codecov.io/github/Programie/Pini/graph/badge.svg?token=ukMdGa0eoS)](https://codecov.io/github/Programie/Pini)
 
 ## Installation
 
